@@ -118,8 +118,11 @@ module.exports = function(RED)
 					return client.sensors.save(sensor);
 				})
 				.then(sensor => {
-					var notify = {};
-					notify.payload = {active: msg.payload, motion: false, updated: sensor.state.lastUpdated};
+					var message = msg || {};
+					message.payload = msg.payload || {};
+					message.payload.active = msg.payload;
+					message.payload.motion = false;
+					message.payload.updated = sensor.state.lastUpdated;
 
 					message.info = {};
 					message.info.id = sensor.id;
@@ -135,7 +138,7 @@ module.exports = function(RED)
 					message.info.model.name = sensor.model.name;
 					message.info.model.type = sensor.model.type;
 
-					scope.send(notify);
+					scope.send(message);
 
 					if(msg.payload == false)
 					{

@@ -109,7 +109,8 @@ module.exports = function(RED)
 		this.on('input', function(msg)
 		{
 			var context = this.context();
-			var tempLightID = (typeof msg.topic != 'undefined' && isNaN(msg.topic) == false && msg.topic.length > 0) ? parseInt(msg.topic) : lightID;
+			context.set('msg', msg);
+			var tempLightID = (typeof msg.topic != 'undefined' && isNaN(msg.topic) == false) ? parseInt(msg.topic) : lightID;
 
 			// CHECK IF LIGHT ID IS SET
 			if(tempLightID == false)
@@ -304,17 +305,7 @@ module.exports = function(RED)
 				.then(light => {
 					if(light != false)
 					{
-						// TRANSITION TIME? WAIT…
-						if(msg.payload.transitionTime)
-						{
-							setTimeout(function() {
-								scope.sendLightStatus(light);
-							}, parseInt(msg.payload.transitionTime)*1010);
-						}
-						else
-						{
-							scope.sendLightStatus(light);
-						}
+						scope.sendLightStatus(light);
 					}
 				})
 				.catch(error => {
@@ -346,8 +337,8 @@ module.exports = function(RED)
 			}
 
 			// DETERMINE TYPE AND SEND STATUS
-			var message = {};
-			message.payload = {};
+			var message = scope.context().get('msg') || {};
+			message.payload = message.payload || {};
 			message.payload.on = light.on;
 			message.payload.brightness = brightnessPercent;
 

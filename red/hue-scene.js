@@ -39,8 +39,9 @@ module.exports = function(RED)
 				return scene;
 			})
 			.then(scene => {
-				var sendSceneInfo = {payload: {}};
 
+				var sendSceneInfo = msg || {};
+				sendSceneInfo.payload = msg.payload || {};
 				sendSceneInfo.payload.id = scene.id;
 				sendSceneInfo.payload.name = scene.name;
 				sendSceneInfo.payload.lightIds = scene.lightIds.join(', ');
